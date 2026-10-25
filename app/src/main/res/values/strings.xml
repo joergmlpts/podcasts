@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Podcasts</string>
+    <string name="delete_podcast_title">Delete Podcast?</string>
+    <string name="delete_podcast_message">This will remove the podcast, all episodes, and any downloaded files.</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="add_podcast">Add Podcast</string>
+    <string name="rss_feed_url">RSS Feed URL</string>
+    <string name="subscribe">Subscribe</string>
+</resources>
