@@ -12,6 +12,9 @@ import org.joergmlpts.podcasts.data.local.PodcastDao
 import org.joergmlpts.podcasts.data.local.PodcastEntity
 import org.joergmlpts.podcasts.data.parser.RssParser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -80,12 +83,16 @@ class PodcastRepository(
             return@withContext
         }
         val podcastsInDb = podcastDao.getAllPodcastsList()
-        for ((_, _, _, _, feedUrl) in podcastsInDb) {
-            try {
-                syncFeedUrl(feedUrl, isInitialSeed = false)
-            } catch (e: Exception) {
-                Log.e("PodcastRepo", "Refresh error on $feedUrl", e)
-            }
+        coroutineScope {
+            podcastsInDb.map { (_, _, _, _, feedUrl) ->
+                async {
+                    try {
+                        syncFeedUrl(feedUrl, isInitialSeed = false)
+                    } catch (e: Exception) {
+                        Log.e("PodcastRepo", "Refresh error on $feedUrl", e)
+                    }
+                }
+            }.awaitAll()
         }
     }
 
@@ -135,7 +142,7 @@ class PodcastRepository(
             var hasNewEpisodes = existingPodcast?.hasNewEpisodes ?: false
             val newEpisodes = episodes.filter { !existingEpisodeIds.contains(it.id) }
 
-            if (!isInitialSeed && newEpisodes.isNotEmpty() && existingPodcast != null) {
+            if ((!isInitialSeed) && newEpisodes.isNotEmpty() && (existingPodcast != null)) {
                 hasNewEpisodes = true
             }
 
