@@ -17,6 +17,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -25,6 +27,8 @@ import java.io.FileOutputStream
 import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
+
+const val maxUpdatesInParallel = 6 // do not update more than this many podcasts in parallel
 
 class PodcastRepository(
     private val context: Context,
@@ -83,13 +87,16 @@ class PodcastRepository(
             return@withContext
         }
         val podcastsInDb = podcastDao.getAllPodcastsList()
+        val semaphore = Semaphore(permits = maxUpdatesInParallel)
         coroutineScope {
             podcastsInDb.map { (_, _, _, _, feedUrl) ->
                 async {
-                    try {
-                        syncFeedUrl(feedUrl, isInitialSeed = false)
-                    } catch (e: Exception) {
-                        Log.e("PodcastRepo", "Refresh error on $feedUrl", e)
+                    semaphore.withPermit {
+                        try {
+                            syncFeedUrl(feedUrl, isInitialSeed = false)
+                        } catch (e: Exception) {
+                            Log.e("PodcastRepo", "Refresh error on $feedUrl", e)
+                        }
                     }
                 }
             }.awaitAll()

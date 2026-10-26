@@ -45,8 +45,9 @@ class PodcastGridViewModel(
     private var searchJob: Job? = null
 
     init {
-        // Implicit Launch Refresh: implicitly executed on cold start/app launch
+        // Implicit Launch Refresh: implicitly executed on cold start/app launch after 2 seconds delay
         viewModelScope.launch {
+            delay(2000.milliseconds)
             _isRefreshing.value = true
             try {
                 repository.initializeAndSeedIfNeeded()
