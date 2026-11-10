@@ -207,8 +207,7 @@ class PodcastRepository(
             ?: return@withContext Result.failure(IllegalArgumentException("Podcast not found: $podcastId"))
         val result = syncFeedUrl(podcast.feedUrl, isInitialSeed = false)
         if (result.isSuccess) {
-            markPodcastAsRead(podcastId)
-            Result.success(result.getOrThrow().copy(hasNewEpisodes = false))
+            Result.success(result.getOrThrow())
         } else {
             result
         }
