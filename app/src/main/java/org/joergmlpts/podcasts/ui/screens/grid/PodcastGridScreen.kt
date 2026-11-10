@@ -59,6 +59,7 @@ fun PodcastGridScreen(
     onPodcastClick: (String) -> Unit,
 ) {
     val podcasts by viewModel.podcasts.collectAsStateWithLifecycle()
+    val downloadedPodcastIds by viewModel.downloadedPodcastIds.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val addDialogState by viewModel.addDialogState.collectAsStateWithLifecycle()
 
@@ -182,8 +183,10 @@ fun PodcastGridScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(podcasts, key = { it.id }) { podcast ->
+                        val hasDownloads = downloadedPodcastIds.contains(podcast.id) || downloadedPodcastIds.contains(podcast.feedUrl)
                         PodcastCard(
                             podcast = podcast,
+                            hasDownloadedEpisodes = hasDownloads,
                             onClick = {
                                 viewModel.onPodcastClicked(podcast.id)
                                 onPodcastClick(podcast.id)

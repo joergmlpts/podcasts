@@ -17,6 +17,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -44,6 +45,8 @@ class PodcastRepository(
     private val searchApi = PodcastSearchApi(client)
 
     val allPodcasts: Flow<List<PodcastEntity>> = podcastDao.getAllPodcasts()
+
+    val downloadedPodcastIds: Flow<Set<String>> = episodeDao.getDownloadedPodcastIds().map { it.toSet() }
 
     fun getEpisodesForPodcast(podcastId: String): Flow<List<EpisodeEntity>> {
         return episodeDao.getEpisodesForPodcast(podcastId)

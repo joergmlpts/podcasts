@@ -22,6 +22,9 @@ interface EpisodeDao {
     @Query("SELECT id FROM episodes WHERE podcastId = :podcastId")
     suspend fun getEpisodeIdsForPodcast(podcastId: String): List<String>
 
+    @Query("SELECT DISTINCT podcastId FROM episodes WHERE isDownloaded = 1")
+    fun getDownloadedPodcastIds(): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEpisodes(episodes: List<EpisodeEntity>): List<Long>
 

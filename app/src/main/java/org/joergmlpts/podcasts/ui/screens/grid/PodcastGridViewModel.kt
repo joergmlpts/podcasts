@@ -36,6 +36,13 @@ class PodcastGridViewModel(
             initialValue = emptyList()
         )
 
+    val downloadedPodcastIds: StateFlow<Set<String>> = repository.downloadedPodcastIds
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptySet()
+        )
+
     private val _isRefreshing = MutableStateFlow(value = false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
