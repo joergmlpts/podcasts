@@ -1,13 +1,15 @@
 plugins {
+    // Kotlin is provided by AGP's built-in Kotlin (AGP 9) - do not apply
+    // org.jetbrains.kotlin.android. The Compose compiler plugin is still needed.
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "org.joergmlpts.podcasts"
-    compileSdk = 35
+    // androidx 1.19/1.12/2.11 artifacts require compiling against API 37.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "org.joergmlpts.podcasts"
@@ -49,9 +51,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // Built-in Kotlin defaults compilerOptions.jvmTarget to
+    // android.compileOptions.targetCompatibility (Java 17), so no kotlinOptions
+    // block is needed.
 
     buildFeatures {
         compose = true
