@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -115,7 +118,14 @@ fun PodcastGridScreen(
         },
         bottomBar = {
             if (playerState.currentEpisode != null) {
-                Box(modifier = Modifier.padding(12.dp)) {
+                // Scaffold does not inset its bottomBar slot, so pad it here: keeps the
+                // playback controls clear of the system navigation bar (three-button
+                // buttons, gesture hint, or nothing on a device without one).
+                Box(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(12.dp)
+                ) {
                     MiniPlayer(
                         playerState = playerState,
                         onTogglePlayPause = onTogglePlayPause,
